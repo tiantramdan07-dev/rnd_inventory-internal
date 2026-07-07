@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: rnd_postgres
+    environment:
+      POSTGRES_DB: rnd_inventory
+      POSTGRES_USER: rnd_user
+      POSTGRES_PASSWORD: password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rnd_backend
+    environment:
+      DATABASE_URL: postgresql://rnd_user:password123@db:5432/rnd_inventory
+      SECRET_KEY: rnd-inventory-secret-2024
+      JWT_SECRET_KEY: jwt-rnd-inventory-2024
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rnd_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
