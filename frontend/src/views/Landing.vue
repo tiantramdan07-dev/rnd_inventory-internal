@@ -4,7 +4,7 @@
     <nav class="lnav">
       <div class="lnav-inner">
         <div class="lnav-brand">
-          <div class="brand-icon"><i class="fas fa-flask"></i></div>
+          <div class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></div>
           <div>
             <div class="brand-name">PT Interskala Mandiri Indonesia</div>
             <div class="brand-sub">R&D & Teknisi Division</div>
@@ -21,72 +21,12 @@
       <div class="hero-bg"></div>
       <div class="container">
         <div class="hero-content">
-          <div class="hero-badge"><i class="fas fa-star"></i> Sistem Inventori Digital</div>
-          <h1 class="hero-title">Divisi R&D & Teknisi<br /><span>PT Interskala Mandiri Indonesia</span></h1>
-          <p class="hero-desc">Kelola inventori toolbox, peminjaman, service teknisi, dan laporan harian dalam satu platform terintegrasi.</p>
+          <div class="hero-badge"><i class=""></i> Sistem Inventori RnD & Teknisi</div>
+          <h1 class="hero-title">Divisi RnD & Teknisi<br /><span>PT Interskala Mandiri Indonesia</span></h1>
+          <p class="hero-desc">Kelola inventori toolbox, peminjaman, service teknisi, dan laporan harian.</p>
           <RouterLink to="/login" class="btn btn-primary btn-lg">
             <i class="fas fa-rocket"></i> Masuk ke Dashboard
           </RouterLink>
-        </div>
-      </div>
-    </section>
-
-    <!-- Divisi Cards -->
-    <section class="section">
-      <div class="container">
-        <div class="section-header">
-          <h2>Profil Divisi</h2>
-          <p>Tim profesional kami siap melayani dengan sepenuh hati</p>
-        </div>
-
-        <div class="grid grid-2" style="gap:28px">
-          <!-- RnD -->
-          <div class="division-card">
-            <div class="division-header purple">
-              <div class="division-icon"><i class="fas fa-flask"></i></div>
-              <div>
-                <h3>Divisi Research & Development</h3>
-                <p>Inovasi & Pengembangan Produk</p>
-              </div>
-            </div>
-            <div class="division-body">
-              <div class="team-grid">
-                <div class="member-card" v-for="m in rndTeam" :key="m.name">
-                  <div class="member-avatar" :style="m.color">
-                    <i :class="m.icon"></i>
-                  </div>
-                  <div class="member-info">
-                    <strong>{{ m.name }}</strong>
-                    <span>{{ m.title }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Teknisi -->
-          <div class="division-card">
-            <div class="division-header blue">
-              <div class="division-icon"><i class="fas fa-tools"></i></div>
-              <div>
-                <h3>Divisi Teknisi</h3>
-                <p>Service & Maintenance Expert</p>
-              </div>
-            </div>
-            <div class="division-body">
-              <div class="team-grid">
-                <div class="member-card" v-for="m in tekTeam" :key="m.name">
-                  <div class="member-avatar" :style="m.color">
-                    <i :class="m.icon"></i>
-                  </div>
-                  <div class="member-info">
-                    <strong>{{ m.name }}</strong>
-                    <span>{{ m.title }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -96,35 +36,18 @@
       <div class="container">
         <div class="section-header">
           <h2>Produk R&D</h2>
-          <p>Inovasi produk unggulan hasil riset dan pengembangan</p>
+          <p>Inovasi produk unggulan hasil riset dan pengembangan - I-CON X Series</p>
         </div>
         <div class="grid grid-3" style="gap:20px">
           <div class="product-card" v-for="p in products" :key="p.name">
-            <div class="product-icon" :style="p.color">
-              <i :class="p.icon"></i>
+            <div class="product-image">
+              <img :src="p.image" :alt="p.name" />
             </div>
             <h4>{{ p.name }}</h4>
             <p>{{ p.desc }}</p>
             <div class="product-specs">
               <span v-for="s in p.specs" :key="s" class="spec-tag">{{ s }}</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features -->
-    <section class="section">
-      <div class="container">
-        <div class="section-header">
-          <h2>Fitur Sistem</h2>
-          <p>Semua yang Anda butuhkan untuk manajemen inventori</p>
-        </div>
-        <div class="grid grid-4" style="gap:16px">
-          <div class="feature-card" v-for="f in features" :key="f.title">
-            <div class="feature-icon" :style="f.color"><i :class="f.icon"></i></div>
-            <h4>{{ f.title }}</h4>
-            <p>{{ f.desc }}</p>
           </div>
         </div>
       </div>
@@ -141,29 +64,52 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 
-const rndTeam = [
-  { name: 'Supervisor R&D', title: 'Aep Saepuloh', icon: 'fas fa-user-tie', color: 'background:linear-gradient(135deg,#7B5EA7,#5C3D96)' },
-  { name: 'Staff R&D 1', title: 'Research Engineer', icon: 'fas fa-microscope', color: 'background:linear-gradient(135deg,#9C6FD4,#7B5EA7)' },
-  { name: 'Staff R&D 2', title: 'Product Developer', icon: 'fas fa-flask', color: 'background:linear-gradient(135deg,#B39DDB,#9575CD)' },
-]
-
-const tekTeam = [
-  { name: 'Supervisor Teknisi', title: 'Aep Saepuloh', icon: 'fas fa-user-cog', color: 'background:linear-gradient(135deg,#2196F3,#1565C0)' },
-  { name: 'Teknisi Senior 1', title: 'Senior Technician', icon: 'fas fa-tools', color: 'background:linear-gradient(135deg,#42A5F5,#1E88E5)' },
-  { name: 'Teknisi Senior 2', title: 'Field Technician', icon: 'fas fa-wrench', color: 'background:linear-gradient(135deg,#64B5F6,#42A5F5)' },
-]
+// Ganti path import berikut sesuai lokasi folder assets pada project Anda,
+// misalnya: import iconXPlus from '@/assets/products/icon-x-plus.png'
+import iconXPlus from '@/assets/products/icon-x-plus.png'
+import iconX4 from '@/assets/products/icon-x4.png'
+import iconX3 from '@/assets/products/icon-x3.png'
+import iconX2 from '@/assets/products/icon-x2.png'
+import iconX1 from '@/assets/products/icon-x1.png'
+import iconXUsb from '@/assets/products/icon-x-usb.png'
 
 const products = [
-  { name: 'Produk Alpha', icon: 'fas fa-microchip', desc: 'Solusi elektronik inovatif untuk industri modern.', specs: ['Industrial Grade', 'IoT Ready', 'IP67'], color: 'background:var(--primary-light);color:var(--primary)' },
-  { name: 'Produk Beta', icon: 'fas fa-cogs', desc: 'Sistem otomasi presisi tinggi untuk efisiensi operasional.', specs: ['Automation', 'High Precision', 'CE Certified'], color: 'background:var(--secondary-light);color:var(--secondary)' },
-  { name: 'Produk Gamma', icon: 'fas fa-satellite-dish', desc: 'Perangkat monitoring & kontrol jarak jauh secara real-time.', specs: ['Remote Control', 'Real-time', '4G/WiFi'], color: 'background:#E8F5E9;color:#2E7D32' },
-]
-
-const features = [
-  { title: 'Toolbox Management', desc: 'Kelola inventori toolbox lengkap dengan foto & detail.', icon: 'fas fa-toolbox', color: 'background:var(--primary-light);color:var(--primary)' },
-  { title: 'Peminjaman', desc: 'Catat peminjaman dengan foto bukti realtime.', icon: 'fas fa-hand-holding', color: 'background:var(--secondary-light);color:var(--secondary)' },
-  { title: 'Service Tracking', desc: 'Pantau status servis teknisi dari pengajuan hingga selesai.', icon: 'fas fa-wrench', color: 'background:#E8F5E9;color:#2E7D32' },
-  { title: 'Export Laporan', desc: 'Download laporan formal dalam format Excel & PDF.', icon: 'fas fa-file-export', color: 'background:#FFF3E0;color:#E65100' },
+  {
+    name: 'I-CON X.+',
+    image: iconXPlus,
+    desc: 'I-CON X.+ merupakan perangkat yang mampu menghubungkan indikator timbangan digital dengan berbagai perangkat dalam satu proses kerja. I-CON X+ merupakan gabungan dari teknologi seri I-CON X sebelumnya. Dengan I-CON X+ kita dapat melakukan penimbangan melalui smartphone yang terhubung dengan printer bluetooth dan display eksternal.',
+    specs: ['Bluetooth', 'Smartphone Ready', 'External Display'],
+  },
+  {
+    name: 'I-CON X.4',
+    image: iconX4,
+    desc: 'I-CON X.4 merupakan pengembangan dari beberapa seri sebelumnya yang merupakan inovasi baru di bidang komunikasi data. Dengan menggunakan I-CON X.4 indikator dapat dihubungkan ke berbagai jenis perangkat seperti display eksternal, printer, secara nirkabel menggunakan Wifi.',
+    specs: ['WiFi', 'Wireless', 'Multi-device'],
+  },
+  {
+    name: 'I-CON X.3',
+    image: iconX3,
+    desc: 'I-CON X.3 merupakan pengembangan dari versi sebelumnya (I-CON X.2) yang merupakan sebuah inovasi dalam komunikasi data. Dengan menggunakan I-CON X.3, indikator yang memiliki serial pin out (RS-232) dapat dihubungkan dengan berbagai jenis perangkat tambahan seperti display eksternal, printer, dan lain-lain melalui frekuensi radio.',
+    specs: ['RS-232', '433 MHz', 'Radio Frequency'],
+  },
+  {
+    name: 'I-CON X.2',
+    image: iconX2,
+    desc: 'I-CON X.2 merupakan pengembangan dari versi sebelumnya (I-CON X.1) yang merupakan produk inovasi baru dalam komunikasi data. Dengan menggunakan I-CON X.2, indikator dapat dihubungkan dengan berbagai jenis perangkat tambahan seperti display eksternal, printer, dan lain-lain tanpa menggunakan kabel.',
+    specs: ['Bluetooth', 'Wireless', 'Display & Printer'],
+  },
+  {
+    name: 'I-CON X.1',
+    image: iconX1,
+    desc: 'I-CON X.1 merupakan produk inovasi baru dalam komunikasi data, yang memungkinkan indikator terhubung dengan berbagai jenis perangkat seperti display eksternal, printer, dan lain sebagainya. Produk ini dibentuk dari sebuah konverter yang dikemas secara ringkas, dengan desain yang sederhana dan kokoh.',
+    specs: ['Original', 'Compact Design', 'Durable'],
+  },
+  {
+    name: 'I-CON X.USB',
+    image: iconXUsb,
+    desc: 'I-CON X.USB merupakan penyempurnaan dari seri I-CON X Series sebelumnya. Dibuat dengan Teknologi USB terbaru untuk mengembangkan fungsi penyimpanan data berat. Output data csv.file terenkripsi dengan baik untuk memenuhi kebutuhan Anda dan kompatibel untuk dibuka di perangkat apa pun.',
+    specs: ['USB Storage', 'Encrypted CSV', 'Universal'],
+  },
 ]
 </script>
 
@@ -195,42 +141,27 @@ const features = [
 .section-header h2 { font-size: 32px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
 .section-header p { color: var(--text-secondary); font-size: 15px; }
 
-/* Division cards */
-.division-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; border: 1px solid rgba(0,0,0,0.04); }
-.division-header { display: flex; align-items: center; gap: 16px; padding: 22px 24px; }
-.division-header.purple { background: linear-gradient(135deg, #7B5EA7, #5C3D96); color: #fff; }
-.division-header.blue { background: linear-gradient(135deg, #2196F3, #1565C0); color: #fff; }
-.division-header h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
-.division-header p { font-size: 12px; opacity: 0.8; }
-.division-icon { width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.division-body { padding: 20px 24px; }
-.team-grid { display: flex; flex-direction: column; gap: 12px; }
-.member-card { display: flex; align-items: center; gap: 14px; padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
-.member-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; flex-shrink: 0; }
-.member-info strong { display: block; font-size: 13px; font-weight: 700; }
-.member-info span { font-size: 11px; color: var(--text-secondary); }
-
 /* Products */
+.grid { display: grid; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
 .product-card { background: #fff; border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s, box-shadow 0.2s; }
 .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-.product-icon { width: 52px; height: 52px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+.product-image { width: 100%; height: 160px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 14px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; }
+.product-image img { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
 .product-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .product-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.6; }
 .product-specs { display: flex; flex-wrap: wrap; gap: 6px; }
 .spec-tag { background: var(--bg); color: var(--text-secondary); padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
-
-/* Features */
-.feature-card { background: #fff; border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.2s; }
-.feature-card:hover { transform: translateY(-2px); }
-.feature-icon { width: 46px; height: 46px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 14px; }
-.feature-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-.feature-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
 
 /* Footer */
 .footer { background: #1a0533; color: rgba(255,255,255,0.6); text-align: center; padding: 24px; font-size: 13px; }
 
 @media (max-width: 768px) {
   .hero-title { font-size: 32px; }
-  .grid-2 { grid-template-columns: 1fr !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
 }
 </style>

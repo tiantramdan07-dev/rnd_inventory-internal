@@ -241,6 +241,8 @@ async function save() {
     if (editing.value) await axios.put(`/laporan/${editing.value.id}`, payload)
     else await axios.post('/laporan', payload)
     await fetchData(); closeModal()
+  } catch (err) {
+    alert(err.response?.data?.message || 'Gagal menyimpan laporan. Silakan coba lagi.')
   } finally { saving.value = false }
 }
 

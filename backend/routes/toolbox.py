@@ -9,14 +9,24 @@ toolbox_bp = Blueprint('toolbox', __name__)
 @toolbox_bp.route('', methods=['GET'])
 @jwt_required()
 def get_toolboxes():
-    toolboxes = Toolbox.query.order_by(Toolbox.created_at.desc()).all()
+    claims = get_jwt()
+    query = Toolbox.query.order_by(Toolbox.created_at.desc())
+
+    # Teknisi hanya melihat toolbox miliknya sendiri; admin & rnd melihat semua.
+    if claims.get('role') not in ['admin', 'rnd']:
+        query = query.filter(Toolbox.owner_name == claims.get('full_name'))
+
+    toolboxes = query.all()
     return jsonify([t.to_dict() for t in toolboxes]), 200
 
 
 @toolbox_bp.route('/<int:tid>', methods=['GET'])
 @jwt_required()
 def get_toolbox(tid):
+    claims = get_jwt()
     t = Toolbox.query.get_or_404(tid)
+    if claims.get('role') not in ['admin', 'rnd'] and t.owner_name != claims.get('full_name'):
+        return jsonify({'message': 'Akses ditolak'}), 403
     return jsonify(t.to_dict()), 200
 
 
@@ -33,7 +43,10 @@ def create_toolbox():
 @toolbox_bp.route('/<int:tid>', methods=['PUT'])
 @jwt_required()
 def update_toolbox(tid):
+    claims = get_jwt()
     t = Toolbox.query.get_or_404(tid)
+    if claims.get('role') not in ['admin', 'rnd'] and t.owner_name != claims.get('full_name'):
+        return jsonify({'message': 'Akses ditolak'}), 403
     data = request.get_json()
     t.owner_name = data.get('owner_name', t.owner_name)
     t.description = data.get('description', t.description)
@@ -58,7 +71,10 @@ def delete_toolbox(tid):
 @toolbox_bp.route('/<int:tid>/items', methods=['POST'])
 @jwt_required()
 def add_item(tid):
-    Toolbox.query.get_or_404(tid)
+    claims = get_jwt()
+    t = Toolbox.query.get_or_404(tid)
+    if claims.get('role') not in ['admin', 'rnd'] and t.owner_name != claims.get('full_name'):
+        return jsonify({'message': 'Akses ditolak'}), 403
     data = request.get_json()
     item = ToolboxItem(
         toolbox_id=tid,
@@ -76,7 +92,10 @@ def add_item(tid):
 @toolbox_bp.route('/items/<int:iid>', methods=['PUT'])
 @jwt_required()
 def update_item(iid):
+    claims = get_jwt()
     item = ToolboxItem.query.get_or_404(iid)
+    if claims.get('role') not in ['admin', 'rnd'] and (not item.toolbox or item.toolbox.owner_name != claims.get('full_name')):
+        return jsonify({'message': 'Akses ditolak'}), 403
     data = request.get_json()
     item.name = data.get('name', item.name)
     item.description = data.get('description', item.description)
@@ -90,7 +109,10 @@ def update_item(iid):
 @toolbox_bp.route('/items/<int:iid>', methods=['DELETE'])
 @jwt_required()
 def delete_item(iid):
+    claims = get_jwt()
     item = ToolboxItem.query.get_or_404(iid)
+    if claims.get('role') not in ['admin', 'rnd'] and (not item.toolbox or item.toolbox.owner_name != claims.get('full_name')):
+        return jsonify({'message': 'Akses ditolak'}), 403
     db.session.delete(item)
     db.session.commit()
     return jsonify({'message': 'Item dihapus'}), 200

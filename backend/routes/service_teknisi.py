@@ -1,11 +1,22 @@
 from flask import Blueprint, request, jsonify, send_file
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from functools import wraps
 from models import ServiceTeknisi
 from app_instance import db
 from datetime import datetime, timedelta
 import io
 
 service_bp = Blueprint('service', __name__)
+
+
+def admin_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        claims = get_jwt()
+        if claims.get('role') != 'admin':
+            return jsonify({'message': 'Hanya Admin yang dapat melakukan aksi ini'}), 403
+        return fn(*args, **kwargs)
+    return wrapper
 
 
 def _generate_nomor():
@@ -36,8 +47,12 @@ def get_services():
     filter_type = request.args.get('filter', 'all')
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = ServiceTeknisi.query
+    if claims.get('role') != 'admin':
+        q = q.filter(ServiceTeknisi.created_by == user_id)
     if filter_type != 'all':
         start, end = parse_date_filter(filter_type, date_from, date_to)
         if start and end:
@@ -52,11 +67,13 @@ def get_services():
 @jwt_required()
 def create_service():
     user_id = int(get_jwt_identity())
+    from models import User
+    current_user = User.query.get(user_id)
     data = request.get_json()
     s = ServiceTeknisi(
         nomor=_generate_nomor(),
         tanggal_pengajuan=datetime.strptime(data['tanggal_pengajuan'], '%Y-%m-%d').date(),
-        nama_teknisi=data['nama_teknisi'],
+        nama_teknisi=current_user.full_name if current_user else data.get('nama_teknisi'),
         nama_sales=data.get('nama_sales'),
         customer=data['customer'],
         produk=data['produk'],
@@ -75,6 +92,7 @@ def create_service():
 
 @service_bp.route('/<int:sid>', methods=['PUT'])
 @jwt_required()
+@admin_required
 def update_service(sid):
     s = ServiceTeknisi.query.get_or_404(sid)
     data = request.get_json()
@@ -93,6 +111,7 @@ def update_service(sid):
 
 @service_bp.route('/<int:sid>', methods=['DELETE'])
 @jwt_required()
+@admin_required
 def delete_service(sid):
     s = ServiceTeknisi.query.get_or_404(sid)
     db.session.delete(s)
@@ -109,8 +128,12 @@ def export_excel():
     filter_type = request.args.get('filter', 'all')
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = ServiceTeknisi.query
+    if claims.get('role') != 'admin':
+        q = q.filter(ServiceTeknisi.created_by == user_id)
     if filter_type != 'all':
         start, end = parse_date_filter(filter_type, date_from, date_to)
         if start and end:
@@ -171,8 +194,12 @@ def export_pdf():
     filter_type = request.args.get('filter', 'all')
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = ServiceTeknisi.query
+    if claims.get('role') != 'admin':
+        q = q.filter(ServiceTeknisi.created_by == user_id)
     if filter_type != 'all':
         start, end = parse_date_filter(filter_type, date_from, date_to)
         if start and end:

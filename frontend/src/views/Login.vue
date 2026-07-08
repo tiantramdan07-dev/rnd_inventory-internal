@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="login-left">
       <div class="login-brand">
-        <div class="brand-icon"><i class="fas fa-flask"></i></div>
+        <div class="brand-icon"><i class="fa-solid fa-scale-balanced"></i></div>
         <span>PT Interskala Mandiri Indonesia</span>
       </div>
       <div class="login-illustration">
@@ -12,7 +12,7 @@
         <div class="ill-icon"><i class="fas fa-toolbox"></i></div>
       </div>
       <h2>Sistem Inventori<br/>R&D & Teknisi</h2>
-      <p>Kelola toolbox, peminjaman, service, dan laporan harian dalam satu platform.</p>
+      <p>Kelola toolbox, peminjaman, service, dan laporan harian.</p>
     </div>
 
     <div class="login-right">

@@ -76,9 +76,13 @@
           <button class="btn btn-ghost btn-icon" @click="closeToolboxModal"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-          <div class="form-group">
+          <div class="form-group" v-if="canChooseOwner">
             <label class="form-label">Nama Pemilik <span style="color:red">*</span></label>
             <input v-model="toolboxForm.owner_name" class="form-control" placeholder="Nama pemilik toolbox" />
+          </div>
+          <div class="form-group" v-else>
+            <label class="form-label">Nama Pemilik</label>
+            <input :value="authStore.user?.full_name" class="form-control" disabled />
           </div>
           <div class="form-group">
             <label class="form-label">Deskripsi</label>
@@ -150,8 +154,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
+const canChooseOwner = computed(() => authStore.isAdmin || authStore.isRnd)
 
 const toolboxes = ref([])
 const loading = ref(true)
@@ -176,14 +184,14 @@ async function fetchToolboxes() {
 
 function openToolboxModal(tb = null) {
   editingToolbox.value = tb
-  toolboxForm.value = tb ? { owner_name: tb.owner_name, description: tb.description || '' } : { owner_name: '', description: '' }
+  toolboxForm.value = tb ? { owner_name: tb.owner_name, description: tb.description || '' } : { owner_name: canChooseOwner.value ? '' : (authStore.user?.full_name || ''), description: '' }
   showToolboxModal.value = true
 }
 
 function closeToolboxModal() { showToolboxModal.value = false; editingToolbox.value = null }
 
 async function saveToolbox() {
-  if (!toolboxForm.value.owner_name.trim()) return
+  if (canChooseOwner.value && !toolboxForm.value.owner_name.trim()) return
   saving.value = true
   try {
     if (editingToolbox.value) {

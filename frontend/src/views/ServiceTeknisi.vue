@@ -40,7 +40,7 @@
               <tr>
                 <th>No</th><th>Nomor</th><th>Tgl Pengajuan</th><th>Teknisi</th>
                 <th>Sales</th><th>Customer</th><th>Produk</th><th>Lokasi</th>
-                <th>Tipe</th><th>Tgl Service</th><th>Tgl Selesai</th><th>Status</th><th>Aksi</th>
+                <th>Tipe</th><th>Tgl Service</th><th>Tgl Selesai</th><th>Status</th><th v-if="auth.isAdmin">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -57,7 +57,7 @@
                 <td>{{ formatDate(s.tanggal_service) }}</td>
                 <td>{{ formatDate(s.tanggal_selesai) }}</td>
                 <td><span class="badge" :class="statusClass(s.status)">{{ s.status }}</span></td>
-                <td>
+                <td v-if="auth.isAdmin">
                   <div class="d-flex gap-8">
                     <button class="btn btn-ghost btn-icon btn-sm" @click="openModal(s)"><i class="fas fa-edit text-primary"></i></button>
                     <button class="btn btn-ghost btn-icon btn-sm" @click="deleteRecord(s)"><i class="fas fa-trash text-danger"></i></button>
@@ -86,7 +86,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">Nama Teknisi <span style="color:red">*</span></label>
-              <input v-model="form.nama_teknisi" class="form-control" placeholder="Nama teknisi" />
+              <input v-model="form.nama_teknisi" class="form-control" placeholder="Nama teknisi" readonly :disabled="!editing" style="background:var(--bg-secondary, #f3f4f6);cursor:not-allowed" />
             </div>
             <div class="form-group">
               <label class="form-label">Nama Sales</label>
@@ -146,7 +146,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { useAuthStore } from '../stores/auth'
 
+const auth = useAuthStore()
 const records = ref([])
 const loading = ref(true)
 const saving = ref(false)
@@ -157,7 +159,7 @@ const filters = ref({ filter: 'all', date_from: '', date_to: '' })
 
 const emptyForm = () => ({
   tanggal_pengajuan: new Date().toISOString().split('T')[0],
-  nama_teknisi: '', nama_sales: '', customer: '', produk: '',
+  nama_teknisi: auth.user?.full_name || '', nama_sales: '', customer: '', produk: '',
   lokasi: '', tipe_service: '', status: 'Pending',
   tanggal_service: '', tanggal_selesai: '', keterangan: ''
 })
@@ -190,6 +192,7 @@ async function fetchData() {
 }
 
 function openModal(s = null) {
+  if (s && !auth.isAdmin) return
   editing.value = s
   form.value = s ? { ...s, tanggal_pengajuan: s.tanggal_pengajuan || '', tanggal_service: s.tanggal_service || '', tanggal_selesai: s.tanggal_selesai || '' } : emptyForm()
   showModal.value = true
@@ -207,6 +210,7 @@ async function save() {
 }
 
 async function deleteRecord(s) {
+  if (!auth.isAdmin) return
   if (!confirm(`Hapus data service ${s.nomor}?`)) return
   await axios.delete(`/service/${s.id}`)
   await fetchData()

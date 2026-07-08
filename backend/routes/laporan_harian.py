@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, send_file
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from models import LaporanHarian
 from app_instance import db
 from datetime import datetime, timedelta
@@ -8,6 +8,17 @@ import io
 laporan_bp = Blueprint('laporan', __name__)
 
 HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+
+
+def _parse_time(value):
+    if not value:
+        return None
+    for fmt in ('%H:%M', '%H:%M:%S'):
+        try:
+            return datetime.strptime(value, fmt).time()
+        except ValueError:
+            continue
+    return None
 
 
 def parse_date_filter(filter_type, date_from=None, date_to=None):
@@ -30,8 +41,12 @@ def get_laporan():
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
     start, end = parse_date_filter(filter_type, date_from, date_to)
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = LaporanHarian.query
+    if claims.get('role') != 'admin':
+        q = q.filter(LaporanHarian.teknisi_id == user_id)
     if start and end:
         q = q.filter(LaporanHarian.tanggal >= start, LaporanHarian.tanggal <= end)
 
@@ -54,8 +69,8 @@ def create_laporan():
         produk=data.get('produk'),
         informasi_tambahan=data.get('informasi_tambahan'),
         status_garansi=data.get('status_garansi', False),
-        jam_start=datetime.strptime(data['jam_start'], '%H:%M').time() if data.get('jam_start') else None,
-        jam_end=datetime.strptime(data['jam_end'], '%H:%M').time() if data.get('jam_end') else None,
+        jam_start=_parse_time(data.get('jam_start')),
+        jam_end=_parse_time(data.get('jam_end')),
         foto_url=data.get('foto_url'),
         teknisi_id=user_id
     )
@@ -68,6 +83,10 @@ def create_laporan():
 @jwt_required()
 def update_laporan(lid):
     lap = LaporanHarian.query.get_or_404(lid)
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+    if claims.get('role') != 'admin' and lap.teknisi_id != user_id:
+        return jsonify({'message': 'Anda tidak berhak mengubah laporan ini'}), 403
     data = request.get_json()
     if data.get('tanggal'):
         tanggal = datetime.strptime(data['tanggal'], '%Y-%m-%d').date()
@@ -77,9 +96,9 @@ def update_laporan(lid):
         if f in data:
             setattr(lap, f, data[f])
     if data.get('jam_start'):
-        lap.jam_start = datetime.strptime(data['jam_start'], '%H:%M').time()
+        lap.jam_start = _parse_time(data['jam_start'])
     if data.get('jam_end'):
-        lap.jam_end = datetime.strptime(data['jam_end'], '%H:%M').time()
+        lap.jam_end = _parse_time(data['jam_end'])
     db.session.commit()
     return jsonify(lap.to_dict()), 200
 
@@ -88,6 +107,10 @@ def update_laporan(lid):
 @jwt_required()
 def delete_laporan(lid):
     lap = LaporanHarian.query.get_or_404(lid)
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+    if claims.get('role') != 'admin' and lap.teknisi_id != user_id:
+        return jsonify({'message': 'Anda tidak berhak menghapus laporan ini'}), 403
     db.session.delete(lap)
     db.session.commit()
     return jsonify({'message': 'Laporan dihapus'}), 200
@@ -103,8 +126,12 @@ def export_excel():
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
     start, end = parse_date_filter(filter_type, date_from, date_to)
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = LaporanHarian.query
+    if claims.get('role') != 'admin':
+        q = q.filter(LaporanHarian.teknisi_id == user_id)
     if start and end:
         q = q.filter(LaporanHarian.tanggal >= start, LaporanHarian.tanggal <= end)
     records = q.order_by(LaporanHarian.tanggal.desc()).all()
@@ -166,8 +193,12 @@ def export_pdf():
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
     start, end = parse_date_filter(filter_type, date_from, date_to)
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
 
     q = LaporanHarian.query
+    if claims.get('role') != 'admin':
+        q = q.filter(LaporanHarian.teknisi_id == user_id)
     if start and end:
         q = q.filter(LaporanHarian.tanggal >= start, LaporanHarian.tanggal <= end)
     records = q.order_by(LaporanHarian.tanggal.desc()).all()
